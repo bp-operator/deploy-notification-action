@@ -1,0 +1,16 @@
+name: 'Deploy Announcement To Slack'
+description: 'Announce Deploy to Slack'
+author: 'jaehwnag.lee@bucketplace.net'
+inputs:
+  version:
+    required: true
+    description: 'version tag'
+  slack-receiver-user:
+    required: false
+    description: "receiver id/group comma separated ex:) U04B8FG9GHH,U04B8FG9GGH"
+  slack-receiver-group:
+    required: false
+    description: "receiver id/group comma separated ex:) U024BE7LH,U024BE7LH "
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
