@@ -8,7 +8,6 @@ workflow가 성공적으로 동작하고 나면 slack에 배포공지 안내를 
 - 아래의 코드를 workflow에 하단에 추가해줍니다.
 - pull request시 source branch는 `release/{version}` 형태여야 합니다.
 - 아래의 GITHUB Secret이 추가
-  - GIT_TOKEN : github 의 rest api를 사용하기 위해 필요한 토큰
   - SLACK_WEBHOOK_URL : 공지할 slack webhook url
 - Slack에 공지가 올라오는 시점은 workflow가 완료된 시점입니다.
 - optional 변수 
@@ -23,11 +22,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Announce To Slack
-        uses: bp-operator/deploy-notification@v1.0
+        uses: bp-operator/deploy-notification-action@v1.0
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SALCK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           GITHUB_REPOSITORY: $GITHUB_REPOSITORY
-          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           version: ${{ needs.{job-name}.outputs.release_version }} // change job-name
           slack-receiver-user: 'U04B8FG9GHH,U04B8FG9GHH'
@@ -43,17 +42,16 @@ jobs:
       - name: get version
         id: vars
         run: |
-          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
           # 'release/**' 브랜치에서 'release/' 문자열을 제거한 나머지를 버전으로 사용
           RELEASE_BRANCH="${{ github.head_ref }}"
           RELEASE_VERSION="${RELEASE_BRANCH/release\//}"
-          echo "::set-output name=release_version::${RELEASE_VERSION}"
+          echo "release_version=${RELEASE_VERSION}" >> $GITHUB_OUTPUT
       - name: Announce To Slack
-        uses: bp-operator/deploy-notification@v1.0
+        uses: bp-operator/deploy-notification-action@v1.0
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SALCK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           GITHUB_REPOSITORY: $GITHUB_REPOSITORY
-          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           version: ${{ steps.vars.outputs.release_version }}
           slack-receiver-user: 'U04B8FG9GHH,U04B8FG9GHH'
