@@ -11,8 +11,9 @@ workflow가 성공적으로 동작하고 나면 slack에 배포공지 안내를 
   - GIT_TOKEN : github 의 rest api를 사용하기 위해 필요한 토큰
   - SLACK_WEBHOOK_URL : 공지할 slack webhook url
 - Slack에 공지가 올라오는 시점은 workflow가 완료된 시점입니다.
-- optional 환경변수
-  - slack
+- optional 변수 
+  - slack-receiver-user: 공지에서 멘션할 slack UserID로 콤마로 구분 ex) 'U04B8FG9GHH,U04B8FG9GHH'
+  - slack-receiver-group: 공지에서 멘션할 slack의 GroupId로 콤마로 구분 ex) 'SAZ94GDB8,SAZ94GDB8' 
 
 #### release verison 을 다른 step에서 환경변수로 지정한 경우
 ```yaml
@@ -29,7 +30,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         with:
           version: ${{ needs.{job-name}.outputs.release_version }} // change job-name
-          slack-receiver: 'eng_team,eng_backend,eng_frontend'
+          slack-receiver-user: 'U04B8FG9GHH,U04B8FG9GHH'
+          slack-receiver-group: 'SAZ94GDB8,SAZ94GDB8'
 ```
 #### release version 을 이전 step에서 가지고 있지 않은경우
 ```yaml
@@ -54,5 +56,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         with:
           version: ${{ steps.vars.outputs.release_version }}
-          slack-receiver: 'eng_team,eng_backend,eng_frontend'
+          slack-receiver-user: 'U04B8FG9GHH,U04B8FG9GHH'
+          slack-receiver-group: 'SAZ94GDB8,SAZ94GDB8'
 ```
