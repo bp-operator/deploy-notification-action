@@ -22,7 +22,7 @@ jobs:
       - name: Announce To Slack
         uses: bp-operator/deploy-notification@v1.0
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SALCK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           GITHUB_REPOSITORY: $GITHUB_REPOSITORY
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         with:
@@ -46,7 +46,7 @@ jobs:
       - name: Announce To Slack
         uses: bp-operator/deploy-notification@v1.0
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SALCK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           GITHUB_REPOSITORY: $GITHUB_REPOSITORY
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
         with:
