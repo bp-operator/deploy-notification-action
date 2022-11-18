@@ -1,0 +1,13 @@
+name: 'Deploy Announcement To Slack'
+description: 'Announce Deploy to Slack'
+author: 'jaehwnag.lee@bucketplace.net'
+inputs:
+  version:
+    required: true
+    description: 'version tag'
+  temp:
+    required: true
+    description: "dd"
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
