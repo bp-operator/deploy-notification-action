@@ -1,6 +1,7 @@
 import {Issue} from './dto/issue'
 import {Milestone} from './dto/milestone'
 import fetch from 'node-fetch'
+import * as core from '@actions/core'
 
 const perPage = 30
 
@@ -64,6 +65,7 @@ async function getIssues(milestoneNumber: string): Promise<any> {
 
 export async function getMilestoneIssues(version: string): Promise<any> {
   const milestoneNumber = await getMilestoneNumber(version)
+  core.debug(`milestone Number : ${milestoneNumber}`)
   const milestoneIssues = milestoneNumber
     ? await getIssues(milestoneNumber)
     : null
