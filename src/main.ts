@@ -8,7 +8,7 @@ async function run(): Promise<void> {
     const slackReceiverUser: string = core.getInput('slack-receiver-user', {
       required: false
     })
-    const slackReceiverTeam: string = core.getInput('slack-receiver-team', {
+    const slackReceiverTeam: string = core.getInput('slack-receiver-group', {
       required: false
     })
 

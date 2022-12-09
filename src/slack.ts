@@ -35,7 +35,7 @@ function getPayload(
         type: 'section',
         text: {
           type: 'plain_text',
-          text: '[빌드 완료 / 배포 예정 안내]'
+          text: '[배포 예정 안내]'
         }
       },
       {

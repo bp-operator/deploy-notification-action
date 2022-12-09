@@ -150,7 +150,7 @@ function run() {
             const slackReceiverUser = core.getInput('slack-receiver-user', {
                 required: false
             });
-            const slackReceiverTeam = core.getInput('slack-receiver-team', {
+            const slackReceiverTeam = core.getInput('slack-receiver-group', {
                 required: false
             });
             core.debug(`Deploy Notification To Slack version: ${version}`);
@@ -234,7 +234,7 @@ function getPayload(issues, version, slackReceiverUser, slackReceiverTeam) {
                 type: 'section',
                 text: {
                     type: 'plain_text',
-                    text: '[빌드 완료 / 배포 예정 안내]'
+                    text: '[배포 예정 안내]'
                 }
             },
             {
