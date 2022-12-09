@@ -78,8 +78,7 @@ function getMilestoneNumber(version, page = 0) {
 }
 function getIssues(milestoneNumber) {
     return __awaiter(this, void 0, void 0, function* () {
-        core.debug(`get issue by : ${milestoneNumber}`);
-        const res = yield (0, node_fetch_1.default)(`https://api.github.com/repos/${getRepository()}/issues?milestone=${milestoneNumber}`, {
+        const res = yield (0, node_fetch_1.default)(`https://api.github.com/repos/${getRepository()}/issues?milestone=${milestoneNumber}&state=all`, {
             method: 'GET',
             headers: {
                 Accept: 'application/vnd.github+json',
@@ -94,7 +93,6 @@ function getIssues(milestoneNumber) {
 function getMilestoneIssues(version) {
     return __awaiter(this, void 0, void 0, function* () {
         const milestoneNumber = yield getMilestoneNumber(version);
-        core.debug(`milestone Number : ${milestoneNumber}`);
         const milestoneIssues = milestoneNumber
             ? yield getIssues(milestoneNumber)
             : null;
@@ -222,13 +220,13 @@ function getPayload(issues, version, slackReceiverUser, slackReceiverTeam) {
             .split(',')
             .map(target => `<@${target}>`)
             .join(' ')
-        : '';
+        : ' ';
     const receiverTeam = slackReceiverTeam
         ? slackReceiverTeam
             .split(',')
             .map(target => `<!subteam^${target}>`)
             .join(' ')
-        : '';
+        : ' ';
     const payload = {
         text: 'anouncement',
         blocks: [

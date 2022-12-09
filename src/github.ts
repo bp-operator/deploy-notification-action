@@ -49,9 +49,8 @@ async function getMilestoneNumber(version: string, page = 0): Promise<any> {
 }
 
 async function getIssues(milestoneNumber: string): Promise<any> {
-  core.debug(`get issue by : ${milestoneNumber}`)
   const res = await fetch(
-    `https://api.github.com/repos/${getRepository()}/issues?milestone=${milestoneNumber}`,
+    `https://api.github.com/repos/${getRepository()}/issues?milestone=${milestoneNumber}&state=all`,
     {
       method: 'GET',
       headers: {
@@ -67,7 +66,6 @@ async function getIssues(milestoneNumber: string): Promise<any> {
 
 export async function getMilestoneIssues(version: string): Promise<any> {
   const milestoneNumber = await getMilestoneNumber(version)
-  core.debug(`milestone Number : ${milestoneNumber}`)
   const milestoneIssues = milestoneNumber
     ? await getIssues(milestoneNumber)
     : null

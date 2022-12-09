@@ -20,13 +20,13 @@ function getPayload(
         .split(',')
         .map(target => `<@${target}>`)
         .join(' ')
-    : ''
+    : ' '
   const receiverTeam = slackReceiverTeam
     ? slackReceiverTeam
         .split(',')
         .map(target => `<!subteam^${target}>`)
         .join(' ')
-    : ''
+    : ' '
 
   const payload = {
     text: 'anouncement',
