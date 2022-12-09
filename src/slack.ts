@@ -1,5 +1,6 @@
 import {Issue} from './dto/issue'
 import fetch from 'node-fetch'
+import * as core from '@actions/core'
 
 function getPayload(
   issues: Issue[],
@@ -78,6 +79,7 @@ export async function sendToSlack(
   slackReceiverUser?: string,
   slackReceiverTeam?: string
 ): Promise<void> {
+  core.debug(`send slack notification: ${version}`)
   await fetch(getSlackUrl(), {
     method: 'POST',
     headers: {

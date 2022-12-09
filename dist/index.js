@@ -6,6 +6,25 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -21,6 +40,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getMilestoneIssues = void 0;
 const node_fetch_1 = __importDefault(__nccwpck_require__(467));
+const core = __importStar(__nccwpck_require__(2186));
 const perPage = 30;
 function getRepository() {
     const repository = process.env.GITHUB_REPOSITORY;
@@ -36,6 +56,7 @@ function getToken() {
 }
 function getMilestoneNumber(version, page = 0) {
     return __awaiter(this, void 0, void 0, function* () {
+        core.debug(`get milestone number: ${version}`);
         const result = yield (0, node_fetch_1.default)(`https://api.github.com/repos/${getRepository()}/milestones?per_page=${perPage}&page=${page}`, {
             method: 'GET',
             headers: {
@@ -57,6 +78,7 @@ function getMilestoneNumber(version, page = 0) {
 }
 function getIssues(milestoneNumber) {
     return __awaiter(this, void 0, void 0, function* () {
+        core.debug(`get issue by : ${milestoneNumber}`);
         const res = yield (0, node_fetch_1.default)(`https://api.github.com/repos/${getRepository()}/issues?milestone=${milestoneNumber}`, {
             method: 'GET',
             headers: {
@@ -72,6 +94,7 @@ function getIssues(milestoneNumber) {
 function getMilestoneIssues(version) {
     return __awaiter(this, void 0, void 0, function* () {
         const milestoneNumber = yield getMilestoneNumber(version);
+        core.debug(`milestone Number : ${milestoneNumber}`);
         const milestoneIssues = milestoneNumber
             ? yield getIssues(milestoneNumber)
             : null;
@@ -152,6 +175,25 @@ run();
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -167,6 +209,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.sendToSlack = void 0;
 const node_fetch_1 = __importDefault(__nccwpck_require__(467));
+const core = __importStar(__nccwpck_require__(2186));
 function getPayload(issues, version, slackReceiverUser, slackReceiverTeam) {
     const milestoneUrl = issues[0] ? issues[0].milestone.html_url : '';
     const repoName = issues[0] ? issues[0].repository_url.split('/').pop() : '';
@@ -229,6 +272,7 @@ function getSlackUrl() {
 }
 function sendToSlack(issues, version, slackReceiverUser, slackReceiverTeam) {
     return __awaiter(this, void 0, void 0, function* () {
+        core.debug(`send slack notification: ${version}`);
         yield (0, node_fetch_1.default)(getSlackUrl(), {
             method: 'POST',
             headers: {

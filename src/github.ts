@@ -22,6 +22,7 @@ function getToken(): string {
 }
 
 async function getMilestoneNumber(version: string, page = 0): Promise<any> {
+  core.debug(`get milestone number: ${version}`)
   const result = await fetch(
     `https://api.github.com/repos/${getRepository()}/milestones?per_page=${perPage}&page=${page}`,
     {
@@ -48,6 +49,7 @@ async function getMilestoneNumber(version: string, page = 0): Promise<any> {
 }
 
 async function getIssues(milestoneNumber: string): Promise<any> {
+  core.debug(`get issue by : ${milestoneNumber}`)
   const res = await fetch(
     `https://api.github.com/repos/${getRepository()}/issues?milestone=${milestoneNumber}`,
     {
