@@ -5,6 +5,7 @@ import * as core from '@actions/core'
 function getPayload(
   issues: Issue[],
   version: string,
+  completionNotification: boolean,
   slackReceiverUser?: string,
   slackReceiverTeam?: string
 ): any {
@@ -27,6 +28,9 @@ function getPayload(
         .map(target => `<!subteam^${target}>`)
         .join(' ')
     : ' '
+  const notificationTitle = completionNotification
+    ? '[리얼 배포 완료 공지]'
+    : '[리얼 배포 예정 안내]'
 
   const payload = {
     text: 'anouncement',
@@ -35,7 +39,7 @@ function getPayload(
         type: 'section',
         text: {
           type: 'plain_text',
-          text: '[배포 예정 안내]'
+          text: `${notificationTitle}`
         }
       },
       {
@@ -77,7 +81,8 @@ export async function sendToSlack(
   issues: Issue[],
   version: string,
   slackReceiverUser?: string,
-  slackReceiverTeam?: string
+  slackReceiverTeam?: string,
+  completionNotification: boolean = false
 ): Promise<void> {
   core.debug(`send slack notification: ${version}`)
   await fetch(getSlackUrl(), {
@@ -86,7 +91,13 @@ export async function sendToSlack(
       Accept: 'application/json'
     },
     body: JSON.stringify(
-      getPayload(issues, version, slackReceiverUser, slackReceiverTeam)
+      getPayload(
+        issues,
+        version,
+        completionNotification,
+        slackReceiverUser,
+        slackReceiverTeam
+      )
     )
   })
 }

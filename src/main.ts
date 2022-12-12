@@ -11,6 +11,12 @@ async function run(): Promise<void> {
     const slackReceiverTeam: string = core.getInput('slack-receiver-group', {
       required: false
     })
+    const completionNotification: boolean = core.getBooleanInput(
+      'completion-notification',
+      {
+        required: true
+      }
+    )
 
     core.debug(`Deploy Notification To Slack version: ${version}`)
 
@@ -19,7 +25,8 @@ async function run(): Promise<void> {
       milestoneIssues,
       version,
       slackReceiverUser,
-      slackReceiverTeam
+      slackReceiverTeam,
+      completionNotification
     )
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)

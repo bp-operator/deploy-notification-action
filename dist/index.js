@@ -153,9 +153,12 @@ function run() {
             const slackReceiverTeam = core.getInput('slack-receiver-group', {
                 required: false
             });
+            const completionNotification = core.getBooleanInput('completion-notification', {
+                required: true,
+            });
             core.debug(`Deploy Notification To Slack version: ${version}`);
             const milestoneIssues = yield (0, github_1.getMilestoneIssues)(version);
-            yield (0, slack_1.sendToSlack)(milestoneIssues, version, slackReceiverUser, slackReceiverTeam);
+            yield (0, slack_1.sendToSlack)(milestoneIssues, version, slackReceiverUser, slackReceiverTeam, completionNotification);
         }
         catch (error) {
             if (error instanceof Error)
@@ -208,7 +211,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.sendToSlack = void 0;
 const node_fetch_1 = __importDefault(__nccwpck_require__(467));
 const core = __importStar(__nccwpck_require__(2186));
-function getPayload(issues, version, slackReceiverUser, slackReceiverTeam) {
+function getPayload(issues, version, completionNotification, slackReceiverUser, slackReceiverTeam) {
     const milestoneUrl = issues[0] ? issues[0].milestone.html_url : '';
     const repoName = issues[0] ? issues[0].repository_url.split('/').pop() : '';
     const releaseVersion = version;
@@ -227,6 +230,7 @@ function getPayload(issues, version, slackReceiverUser, slackReceiverTeam) {
             .map(target => `<!subteam^${target}>`)
             .join(' ')
         : ' ';
+    const notificationTitle = completionNotification ? '[리얼 배포 완료 공지]' : '[리얼 배포 예정 안내]';
     const payload = {
         text: 'anouncement',
         blocks: [
@@ -234,7 +238,7 @@ function getPayload(issues, version, slackReceiverUser, slackReceiverTeam) {
                 type: 'section',
                 text: {
                     type: 'plain_text',
-                    text: '[배포 예정 안내]'
+                    text: `${notificationTitle}`
                 }
             },
             {
@@ -268,7 +272,7 @@ function getSlackUrl() {
         throw ReferenceError('Failed To Get SLACK_WEBHOOK_URL in workflow environment');
     return url;
 }
-function sendToSlack(issues, version, slackReceiverUser, slackReceiverTeam) {
+function sendToSlack(issues, version, slackReceiverUser, slackReceiverTeam, completionNotification = false) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`send slack notification: ${version}`);
         yield (0, node_fetch_1.default)(getSlackUrl(), {
@@ -276,7 +280,7 @@ function sendToSlack(issues, version, slackReceiverUser, slackReceiverTeam) {
             headers: {
                 Accept: 'application/json'
             },
-            body: JSON.stringify(getPayload(issues, version, slackReceiverUser, slackReceiverTeam))
+            body: JSON.stringify(getPayload(issues, version, completionNotification, slackReceiverUser, slackReceiverTeam))
         });
     });
 }
