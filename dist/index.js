@@ -227,6 +227,8 @@ function getPayload(issues, version, slackReceiverUser, slackReceiverTeam) {
             .map(target => `<!subteam^${target}>`)
             .join(' ')
         : ' ';
+    core.debug(receiverUser);
+    core.debug(receiverTeam);
     const payload = {
         text: 'anouncement',
         blocks: [
@@ -271,13 +273,14 @@ function getSlackUrl() {
 function sendToSlack(issues, version, slackReceiverUser, slackReceiverTeam) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`send slack notification: ${version}`);
-        yield (0, node_fetch_1.default)(getSlackUrl(), {
+        const result = yield (0, node_fetch_1.default)(getSlackUrl(), {
             method: 'POST',
             headers: {
                 Accept: 'application/json'
             },
             body: JSON.stringify(getPayload(issues, version, slackReceiverUser, slackReceiverTeam))
         });
+        core.debug(`slack result: ${result.status}`);
     });
 }
 exports.sendToSlack = sendToSlack;

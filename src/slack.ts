@@ -28,6 +28,9 @@ function getPayload(
         .join(' ')
     : ' '
 
+  core.debug(receiverUser)
+  core.debug(receiverTeam)
+
   const payload = {
     text: 'anouncement',
     blocks: [
@@ -80,7 +83,7 @@ export async function sendToSlack(
   slackReceiverTeam?: string
 ): Promise<void> {
   core.debug(`send slack notification: ${version}`)
-  await fetch(getSlackUrl(), {
+  const result = await fetch(getSlackUrl(), {
     method: 'POST',
     headers: {
       Accept: 'application/json'
@@ -89,4 +92,5 @@ export async function sendToSlack(
       getPayload(issues, version, slackReceiverUser, slackReceiverTeam)
     )
   })
+  core.debug(`slack result: ${result.status}`)
 }
