@@ -13,6 +13,8 @@ workflow가 성공적으로 동작하고 나면 slack에 배포공지 안내를 
 - optional 변수 
   - slack-receiver-user: 공지에서 멘션할 slack UserID로 콤마로 구분 ex) 'U04B8FG9GHH,U04B8FG9GHH'
   - slack-receiver-group: 공지에서 멘션할 slack의 GroupId로 콤마로 구분 ex) 'SAZ94GDB8,SAZ94GDB8' 
+- 배포전 PR(release/{version} -> main)을 열었을 경우 예시 ([workflow sample](https://github.com/bucketplace/ohou.se-client/blob/develop/.github/workflows/deploy-prod-advance-notification-to-slack.yaml))
+- 배포후 공지(release note 작성) ([workflow sample](https://github.com/bucketplace/ohou.se-client/blob/develop/.github/workflows/deploy-prod-completion-notification-to-slack.yaml))
 
 #### release verison 을 다른 step에서 환경변수로 지정한 경우
 ```yaml
