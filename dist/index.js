@@ -38,7 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.getMilestoneIssues = void 0;
+exports.getDriver = exports.getMilestoneIssues = void 0;
 const node_fetch_1 = __importDefault(__nccwpck_require__(467));
 const core = __importStar(__nccwpck_require__(2186));
 const perPage = 30;
@@ -57,7 +57,7 @@ function getToken() {
 function getMilestoneNumber(version, page = 0) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`get milestone number: ${version}`);
-        const result = yield (0, node_fetch_1.default)(`https://api.github.com/repos/${getRepository()}/milestones?per_page=${perPage}&page=${page}`, {
+        const result = yield (0, node_fetch_1.default)(`https://api.github.com/repos/${getRepository()}/milestones?per_page=${perPage}&page=${page}&state=all`, {
             method: 'GET',
             headers: {
                 Accept: 'application/vnd.github+json',
@@ -102,6 +102,20 @@ function getMilestoneIssues(version) {
     });
 }
 exports.getMilestoneIssues = getMilestoneIssues;
+function getDriver() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const res = yield (0, node_fetch_1.default)(`https://api.github.com/user`, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/vnd.github+json',
+                Authorization: `Bearer ${getToken()}`
+            }
+        })
+            .then(res => res.json());
+        return res.login;
+    });
+}
+exports.getDriver = getDriver;
 
 
 /***/ }),
@@ -154,11 +168,12 @@ function run() {
                 required: false
             });
             const completionNotification = core.getBooleanInput('completion-notification', {
-                required: true,
+                required: true
             });
             core.debug(`Deploy Notification To Slack version: ${version}`);
             const milestoneIssues = yield (0, github_1.getMilestoneIssues)(version);
-            yield (0, slack_1.sendToSlack)(milestoneIssues, version, slackReceiverUser, slackReceiverTeam, completionNotification);
+            const driver = yield (0, github_1.getDriver)();
+            yield (0, slack_1.sendToSlack)(driver, milestoneIssues, version, slackReceiverUser, slackReceiverTeam, completionNotification);
         }
         catch (error) {
             if (error instanceof Error)
@@ -211,12 +226,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.sendToSlack = void 0;
 const node_fetch_1 = __importDefault(__nccwpck_require__(467));
 const core = __importStar(__nccwpck_require__(2186));
-function getPayload(issues, version, completionNotification, slackReceiverUser, slackReceiverTeam) {
+function getPayload(driver, issues, version, completionNotification, slackReceiverUser, slackReceiverTeam) {
     const milestoneUrl = issues[0] ? issues[0].milestone.html_url : '';
     const repoName = issues[0] ? issues[0].repository_url.split('/').pop() : '';
     const releaseVersion = version;
     const description = issues.map(it => it.title).join('\n');
-    const creator = issues[0] ? issues[0].milestone.creator.login : '';
     const now = new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
     const receiverUser = slackReceiverUser
         ? slackReceiverUser
@@ -230,7 +244,9 @@ function getPayload(issues, version, completionNotification, slackReceiverUser, 
             .map(target => `<!subteam^${target}>`)
             .join(' ')
         : ' ';
-    const notificationTitle = completionNotification ? '[리얼 배포 완료 공지]' : '[리얼 배포 예정 안내]';
+    const notificationTitle = completionNotification
+        ? '[리얼 배포 완료 공지]'
+        : '[리얼 배포 예정 안내]';
     const payload = {
         text: 'anouncement',
         blocks: [
@@ -245,7 +261,7 @@ function getPayload(issues, version, completionNotification, slackReceiverUser, 
                 type: 'section',
                 text: {
                     type: 'mrkdwn',
-                    text: `• Schedule: ${now}\n• Release Version: ${repoName} ${releaseVersion}\n• Milestone: ${milestoneUrl}\n• Driver: ${creator}\n • Description:`
+                    text: `• Schedule: ${now}\n• Release Version: ${repoName} ${releaseVersion}\n• Milestone: ${milestoneUrl}\n• Driver: ${driver}\n • Description:`
                 }
             },
             {
@@ -272,7 +288,7 @@ function getSlackUrl() {
         throw ReferenceError('Failed To Get SLACK_WEBHOOK_URL in workflow environment');
     return url;
 }
-function sendToSlack(issues, version, slackReceiverUser, slackReceiverTeam, completionNotification = false) {
+function sendToSlack(driver, issues, version, slackReceiverUser, slackReceiverTeam, completionNotification = false) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`send slack notification: ${version}`);
         yield (0, node_fetch_1.default)(getSlackUrl(), {
@@ -280,7 +296,7 @@ function sendToSlack(issues, version, slackReceiverUser, slackReceiverTeam, comp
             headers: {
                 Accept: 'application/json'
             },
-            body: JSON.stringify(getPayload(issues, version, completionNotification, slackReceiverUser, slackReceiverTeam))
+            body: JSON.stringify(getPayload(driver, issues, version, completionNotification, slackReceiverUser, slackReceiverTeam))
         });
     });
 }
