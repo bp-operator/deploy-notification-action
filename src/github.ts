@@ -75,3 +75,19 @@ export async function getMilestoneIssues(version: string): Promise<any> {
     )
   return milestoneIssues
 }
+
+export async function getDriver(): Promise<any> {
+  const res = await fetch(
+    `https://api.github.com/user`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${getToken()}`
+      }
+    }
+  )
+    .then(res => res.json())
+
+  return res.login
+}
