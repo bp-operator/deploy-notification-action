@@ -24,7 +24,7 @@ function getToken(): string {
 async function getMilestoneNumber(version: string, page = 0): Promise<any> {
   core.debug(`get milestone number: ${version}`)
   const result = await fetch(
-    `https://api.github.com/repos/${getRepository()}/milestones?per_page=${perPage}&page=${page}`,
+    `https://api.github.com/repos/${getRepository()}/milestones?per_page=${perPage}&page=${page}&state=all`,
     {
       method: 'GET',
       headers: {
@@ -74,4 +74,16 @@ export async function getMilestoneIssues(version: string): Promise<any> {
       `Failed To Get milestone issues milestone number:${milestoneNumber}`
     )
   return milestoneIssues
+}
+
+export async function getDriver(): Promise<any> {
+  const res = await fetch(`https://api.github.com/user`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${getToken()}`
+    }
+  }).then(res => res.json())
+
+  return res.login
 }

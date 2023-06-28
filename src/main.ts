@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import {getMilestoneIssues} from './github'
+import {getMilestoneIssues, getDriver} from './github'
 import {sendToSlack} from './slack'
 
 async function run(): Promise<void> {
@@ -21,7 +21,9 @@ async function run(): Promise<void> {
     core.debug(`Deploy Notification To Slack version: ${version}`)
 
     const milestoneIssues = await getMilestoneIssues(version)
+    const driver = await getDriver()
     await sendToSlack(
+      driver,
       milestoneIssues,
       version,
       slackReceiverUser,

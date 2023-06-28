@@ -3,6 +3,7 @@ import fetch from 'node-fetch'
 import * as core from '@actions/core'
 
 function getPayload(
+  driver: string,
   issues: Issue[],
   version: string,
   completionNotification: boolean,
@@ -13,7 +14,6 @@ function getPayload(
   const repoName = issues[0] ? issues[0].repository_url.split('/').pop() : ''
   const releaseVersion = version
   const description = issues.map(it => it.title).join('\n')
-  const creator = issues[0] ? issues[0].milestone.creator.login : ''
   const now = new Date().toLocaleString('ko-KR', {timeZone: 'Asia/Seoul'})
 
   const receiverUser = slackReceiverUser
@@ -46,7 +46,7 @@ function getPayload(
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `• Schedule: ${now}\n• Release Version: ${repoName} ${releaseVersion}\n• Milestone: ${milestoneUrl}\n• Driver: ${creator}\n • Description:`
+          text: `• Schedule: ${now}\n• Release Version: ${repoName} ${releaseVersion}\n• Milestone: ${milestoneUrl}\n• Driver: ${driver}\n • Description:`
         }
       },
       {
@@ -78,6 +78,7 @@ function getSlackUrl(): string {
 }
 
 export async function sendToSlack(
+  driver: string,
   issues: Issue[],
   version: string,
   slackReceiverUser?: string,
@@ -92,6 +93,7 @@ export async function sendToSlack(
     },
     body: JSON.stringify(
       getPayload(
+        driver,
         issues,
         version,
         completionNotification,
