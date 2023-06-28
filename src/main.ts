@@ -21,7 +21,7 @@ async function run(): Promise<void> {
     core.debug(`Deploy Notification To Slack version: ${version}`)
 
     const milestoneIssues = await getMilestoneIssues(version)
-    const driver = await getDriver()
+    const driver = getDriver()
     await sendToSlack(
       driver,
       milestoneIssues,
