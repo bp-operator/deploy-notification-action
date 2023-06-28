@@ -1,6 +1,5 @@
 # deploy-notification-action
 
-
 ## 배포공지 알림 action
 배포시 슬랙에 배포 공지를 자동으로 작성해주는 action입니다. \
 workflow가 성공적으로 동작하고 나면 slack에 배포공지 안내를 알려주는 공지를 합니다.
