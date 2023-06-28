@@ -103,16 +103,10 @@ function getMilestoneIssues(version) {
 }
 exports.getMilestoneIssues = getMilestoneIssues;
 function getDriver() {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, node_fetch_1.default)(`https://api.github.com/user`, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/vnd.github+json',
-                Authorization: `Bearer ${getToken()}`
-            }
-        }).then(res => res.json());
-        return res.login;
-    });
+    const driver = process.env.GITHUB_ACTOR;
+    if (!driver)
+        throw ReferenceError('Failed To Get GITHUB_ACTOR in workflow environment');
+    return driver;
 }
 exports.getDriver = getDriver;
 
@@ -171,7 +165,7 @@ function run() {
             });
             core.debug(`Deploy Notification To Slack version: ${version}`);
             const milestoneIssues = yield (0, github_1.getMilestoneIssues)(version);
-            const driver = yield (0, github_1.getDriver)();
+            const driver = (0, github_1.getDriver)();
             yield (0, slack_1.sendToSlack)(driver, milestoneIssues, version, slackReceiverUser, slackReceiverTeam, completionNotification);
         }
         catch (error) {
