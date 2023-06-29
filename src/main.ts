@@ -29,9 +29,9 @@ async function run(): Promise<void> {
       driver,
       milestoneIssues,
       version,
+      completionNotification,
       slackReceiverUser,
       slackReceiverTeam,
-      completionNotification,
       environment
     )
   } catch (error) {
