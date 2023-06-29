@@ -8,7 +8,8 @@ function getPayload(
   version: string,
   completionNotification: boolean,
   slackReceiverUser?: string,
-  slackReceiverTeam?: string
+  slackReceiverTeam?: string,
+  environment?: string
 ): any {
   const milestoneUrl = issues[0] ? issues[0].milestone.html_url : ''
   const repoName = issues[0] ? issues[0].repository_url.split('/').pop() : ''
@@ -31,6 +32,7 @@ function getPayload(
   const notificationTitle = completionNotification
     ? '[리얼 배포 완료 공지]'
     : '[리얼 배포 예정 안내]'
+  const environmentTitle = environment ? `[${environment}]` : ''
 
   const payload = {
     text: 'anouncement',
@@ -39,7 +41,7 @@ function getPayload(
         type: 'section',
         text: {
           type: 'plain_text',
-          text: `${notificationTitle}`
+          text: `${notificationTitle} ${environmentTitle}`
         }
       },
       {
@@ -81,9 +83,10 @@ export async function sendToSlack(
   driver: string,
   issues: Issue[],
   version: string,
+  completionNotification: boolean = false,
   slackReceiverUser?: string,
   slackReceiverTeam?: string,
-  completionNotification: boolean = false
+  environment?: string
 ): Promise<void> {
   core.debug(`send slack notification: ${version}`)
   await fetch(getSlackUrl(), {
@@ -98,7 +101,8 @@ export async function sendToSlack(
         version,
         completionNotification,
         slackReceiverUser,
-        slackReceiverTeam
+        slackReceiverTeam,
+        environment
       )
     )
   })

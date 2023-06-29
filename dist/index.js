@@ -160,13 +160,16 @@ function run() {
             const slackReceiverTeam = core.getInput('slack-receiver-group', {
                 required: false
             });
+            const environment = core.getInput('environment', {
+                required: false
+            });
             const completionNotification = core.getBooleanInput('completion-notification', {
                 required: true
             });
             core.debug(`Deploy Notification To Slack version: ${version}`);
             const milestoneIssues = yield (0, github_1.getMilestoneIssues)(version);
             const driver = (0, github_1.getDriver)();
-            yield (0, slack_1.sendToSlack)(driver, milestoneIssues, version, slackReceiverUser, slackReceiverTeam, completionNotification);
+            yield (0, slack_1.sendToSlack)(driver, milestoneIssues, version, completionNotification, slackReceiverUser, slackReceiverTeam, environment);
         }
         catch (error) {
             if (error instanceof Error)
@@ -219,7 +222,7 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.sendToSlack = void 0;
 const node_fetch_1 = __importDefault(__nccwpck_require__(467));
 const core = __importStar(__nccwpck_require__(2186));
-function getPayload(driver, issues, version, completionNotification, slackReceiverUser, slackReceiverTeam) {
+function getPayload(driver, issues, version, completionNotification, slackReceiverUser, slackReceiverTeam, environment) {
     const milestoneUrl = issues[0] ? issues[0].milestone.html_url : '';
     const repoName = issues[0] ? issues[0].repository_url.split('/').pop() : '';
     const releaseVersion = version;
@@ -240,6 +243,9 @@ function getPayload(driver, issues, version, completionNotification, slackReceiv
     const notificationTitle = completionNotification
         ? '[리얼 배포 완료 공지]'
         : '[리얼 배포 예정 안내]';
+    const environmentTitle = environment
+        ? `[${environment}]`
+        : '';
     const payload = {
         text: 'anouncement',
         blocks: [
@@ -247,7 +253,7 @@ function getPayload(driver, issues, version, completionNotification, slackReceiv
                 type: 'section',
                 text: {
                     type: 'plain_text',
-                    text: `${notificationTitle}`
+                    text: `${notificationTitle} ${environmentTitle}`
                 }
             },
             {
@@ -281,7 +287,7 @@ function getSlackUrl() {
         throw ReferenceError('Failed To Get SLACK_WEBHOOK_URL in workflow environment');
     return url;
 }
-function sendToSlack(driver, issues, version, slackReceiverUser, slackReceiverTeam, completionNotification = false) {
+function sendToSlack(driver, issues, version, completionNotification = false, slackReceiverUser, slackReceiverTeam, environment) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`send slack notification: ${version}`);
         yield (0, node_fetch_1.default)(getSlackUrl(), {
@@ -289,7 +295,7 @@ function sendToSlack(driver, issues, version, slackReceiverUser, slackReceiverTe
             headers: {
                 Accept: 'application/json'
             },
-            body: JSON.stringify(getPayload(driver, issues, version, completionNotification, slackReceiverUser, slackReceiverTeam))
+            body: JSON.stringify(getPayload(driver, issues, version, completionNotification, slackReceiverUser, slackReceiverTeam, environment))
         });
     });
 }

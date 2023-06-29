@@ -11,6 +11,9 @@ async function run(): Promise<void> {
     const slackReceiverTeam: string = core.getInput('slack-receiver-group', {
       required: false
     })
+    const environment: string = core.getInput('environment', {
+      required: false
+    })
     const completionNotification: boolean = core.getBooleanInput(
       'completion-notification',
       {
@@ -26,9 +29,10 @@ async function run(): Promise<void> {
       driver,
       milestoneIssues,
       version,
+      completionNotification,
       slackReceiverUser,
       slackReceiverTeam,
-      completionNotification
+      environment
     )
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
