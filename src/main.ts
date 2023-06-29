@@ -11,6 +11,9 @@ async function run(): Promise<void> {
     const slackReceiverTeam: string = core.getInput('slack-receiver-group', {
       required: false
     })
+    const environment: string = core.getInput('environment', {
+      required: false
+    })
     const completionNotification: boolean = core.getBooleanInput(
       'completion-notification',
       {
