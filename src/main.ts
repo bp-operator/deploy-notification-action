@@ -31,7 +31,8 @@ async function run(): Promise<void> {
       version,
       slackReceiverUser,
       slackReceiverTeam,
-      completionNotification
+      completionNotification,
+      environment
     )
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)

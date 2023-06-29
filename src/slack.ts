@@ -7,7 +7,7 @@ function getPayload(
   issues: Issue[],
   version: string,
   completionNotification: boolean,
-  environment: string,
+  environment?: string,
   slackReceiverUser?: string,
   slackReceiverTeam?: string
 ): any {
@@ -88,7 +88,7 @@ export async function sendToSlack(
   slackReceiverUser?: string,
   slackReceiverTeam?: string,
   completionNotification: boolean = false,
-  environment: string
+  environment?: string
 ): Promise<void> {
   core.debug(`send slack notification: ${version}`)
   await fetch(getSlackUrl(), {
